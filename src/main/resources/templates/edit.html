@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <!-- css -->
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" 
+    integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous"/>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+    integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"/>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+    integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous"/>
+  <link rel="stylesheet" href="./mercari.css"/>
+  <!-- script -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+    integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <title>Rakus Items</title>
+</head>
+<body>
+  <!-- navbar -->
+  <nav th:include="header::frag_header"></nav>
+
+  <!-- details -->
+  <div id="input-main" class="container">
+    <a type="button" class="btn btn-default" href="./detail.html"><i class="fa fa-reply"></i> back</a>
+    <h2>Edit</h2>
+
+    <!-- edit form -->
+    <form action="#" method="POST" class="form-horizontal" th:object="${itemForm}" th:action="@{/updateItem}">
+        <!-- name -->
+        <div class="form-group">
+          <label for="inputName" class="col-sm-2 control-label">name</label>
+          <div class="col-sm-8">
+            <input type="text" class="form-control" name="name" id="inputName" th:value="${item.name}"/>
+          </div>
+        </div>
+        <!-- price -->
+        <div class="form-group">
+          <label for="price" class="col-sm-2 control-label">price</label>
+          <div class="col-sm-8">
+            <input type="text" class="form-control"  name="price" id="price" th:value="${item.price}"/>
+          </div>
+        </div>
+        <!-- category -->
+        <div class="form-group">
+          <label for="category" class="col-sm-2 control-label">category</label>
+          <div class="col-sm-8">
+            <select class="form-control" name="parentCategory" id="parentCategory">
+            <option th:if="${parentSelectedName==null && parentCategory!=''&& parentCategory!=null}" th:text=${parentCategory}></option>
+        <option th:if="${parentSelectedName!=null}" th:text="${parentSelectedName}"></option>
+            <option>-Category1-</option>
+            <option  th:each="parentCategory:${parentCategoryList}" th:text="${parentCategory.name}"></option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="category" class="col-sm-2 control-label"></label>
+          <div class="col-sm-8">
+            <select class="form-control" name="childCategory" id="childCategory">
+            <option th:if="${childSelectedName==null && childCategory!=''&& childCategory!=null}" th:text=${childCategory}></option>
+           <option th:if="${childSelectedName!=null}" th:text="${childSelectedName}"></option>
+            <option value="-Category2-" th:if="${selectedChildCategoryBysearch!='-Category2-'}">-Category2-</option>
+            <option th:each="childCategory:${childCategoryList}" th:text="${childCategory.name}">childCategory1</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="category" class="col-sm-2 control-label"></label>
+          <div class="col-sm-8">
+            <select class="form-control" name="grandChildCategory" id="grandChildCategory">
+            <option th:if="${grandChildSelectedName==null && grandChildCategory!=''&& grandChildCategory!=null}" th:text=${grandChildCategory}></option>
+          <option th:if="${grandChildSelectedName!=null}" th:text="${grandChildSelectedName}"></option>
+            <option value="- Category3 -" th:if="${selectedGrandChildCategoryBysearch!='- Category3 -'}" >- Category3 -</option>
+            <option th:each="grandChildCategory:${grandChildCategoryList}" th:text="${grandChildCategory.name}">grandChild1</option>
+            </select>
+            <span class="text-danger" th:text="${session.categoryError}" style="color:red;"></span>
+          </div>
+        </div>
+        <!-- brand -->
+        <div class="form-group">
+          <label for="brand" class="col-sm-2 control-label">brand</label>
+          <div class="col-sm-8">
+            <input type="text" id="brand" class="form-control" name="brandName" th:value="${item.brandName}"/>
+          </div>
+        </div>
+        <!-- condition -->
+        <div class="form-group">
+          <label for="condition" class="col-sm-2 control-label">condition</label>
+          <div class="col-sm-8">
+            <label for="condition1" class="radio-inline">
+              <input type="radio" class="condition" name="condition" id="condition1" value="1" th:checked="${item.condition==1}"/> 1
+            </label>
+            <label for="condition2" class="radio-inline">
+              <input type="radio"  class="condition" name="condition" id="condition2" value="2" th:checked="${item.condition==2}"/> 2
+            </label>
+            <label for="condition3" class="radio-inline">
+              <input type="radio" class="condition" name="condition" id="condition3" value="3" th:checked="${item.condition==3}"/> 3
+            </label>
+          </div>
+        </div>
+        <!-- description -->
+        <div class="form-group">
+          <label for="description" class="col-sm-2 control-label">description</label>
+          <div class="col-sm-8">
+            <textarea name="description" id="description" class="form-control" rows="5" th:text="${item.description}"></textarea>
+          </div>
+        </div>
+        <!-- salePrice -->
+        <div class="form-group">
+          <label for="salePrice" class="col-sm-2 control-label">salePrice</label>
+          <div class="col-sm-8">
+            <input type="text" name="salePrice" id="salePrice" class="form-control">
+          </div>
+        </div>
+        <!-- submit button -->
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-10">
+          <input type="hidden" name="id" th:value="${session.id}">
+            <button type="submit" class="btn btn-default">Submit</button>
+          </div>
+        </div>
+      </form>
+    </div>
+    <script th:src="@{/categoryOfUpdate.js}"></script>
+</body>
+</html>

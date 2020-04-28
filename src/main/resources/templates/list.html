@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <!-- css -->
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" 
+    integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous"/>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+    integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"/>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+    integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous"/>
+  <link rel="stylesheet" href="./mercari.css"/>
+
+  <!-- script -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+    integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <title>Rakus Items</title>
+</head>
+<body>
+  <!-- navbar -->
+ <nav th:include="header::frag_header"></nav>
+
+  <div id="main" class="container-fluid">
+    <!-- addItem link -->
+    <div id="addItemButton">
+      <a class="btn btn-default" th:href="@{/toAddItem}" href="./add.html"><i class="fa fa-plus-square-o"></i> Add New Item</a>
+    </div>
+
+    <!-- 検索フォーム -->
+    <div id="forms">
+      <form action="" class="form-inline" role="form" method="post" th:action="@{/showItemList}">
+        <div class="form-group">
+          <input type="input" class="form-control" id="name" placeholder="item name" name="searchName" th:value="*{searchName}"/>
+        </div>
+        <div class="form-group"><i class="fa fa-plus"></i></div>
+        <div class="form-group">
+          <select class="form-control" name="parentSelectedName" id="parentCategory">
+            <option th:if="${selectedParentCategoryBysearch!=null}" th:text="${selectedParentCategoryBysearch}" th:value="*{selectedParentCategoryBysearch}"></option>
+            <option value="-Category1-" th:if="${selectedParentCategoryBysearch!='-Category1-'}">-Category1-</option>
+            <option th:if="${selectedChildCategoryBysearch=='-Category2-' && selectedGrandChildCategoryBysearch=='- Category3 -'}"  th:each="parentCategory:${parentCategoryList}" th:text="${parentCategory.name}"></option>
+
+          </select>
+          <select class="form-control" name="childSelectedName" id="childCategory">
+             <option th:if="${selectedChildCategoryBysearch!=null}" th:text="${selectedChildCategoryBysearch}" th:value="*{selectedChildCategoryBysearch}"></option>
+            <option value="-Category2-" th:if="${selectedChildCategoryBysearch!='-Category2-'}">-Category2-</option>
+            <option th:if="${selectedGrandChildCategoryBysearch=='- Category3 -'}" th:each="childCategory:${session.childCategoryList}" th:text="${childCategory.name}">childCategory1</option>
+          </select>
+          <select class="form-control" name="grandChildSelectedName" id="grandChildCategory">
+           <option th:if="${selectedGrandChildCategoryBysearch!=null}" th:text="${selectedGrandChildCategoryBysearch}" th:value="*{selectedGrandChildCategoryBysearch}"></option>
+            <option value="- Category3 -" th:if="${selectedGrandChildCategoryBysearch!='- Category3 -'}" >- Category3 -</option>
+            <option th:each="grandChildCategory:${session.grandChildCategoryList}" th:text="${grandChildCategory.name}">grandChild1</option>
+          </select>
+        </div>
+        <div class="form-group"><i class="fa fa-plus"></i></div>
+        <div class="form-group">
+          <input type="text" id="brand" name="brand" th:value="*{brand}" class="form-control" placeholder="brand"/>
+        </div>
+        <div class="form-group"></div>
+        <button type="submit" class="btn btn-default"><i class="fa fa-angle-double-right"></i> search</button><br>
+        <div th:text=${noItem}></div>
+        <input type="hidden" th:value="*{session.grandChildId}" name="grandChildId">
+      </form>
+<!--     </div>
+        <div class="pages">
+      <nav class="page-nav">
+      <a href="#" th:href="@{/showSaleItemList}">search sale item</a>
+      </nav>
+    </div> -->
+
+    <!-- pagination -->
+    <div class="pages">
+      <nav class="page-nav">
+        <ul class="pager">
+          <li class="previous"><a href="#" th:href="@{'/showItemList?offset=' + ${offset-30}+'&searchName='+${searchName}+'&parentSelectedName='+${escapedParentSelectedName}+'&childSelectedName='+${escapedChildSelectedName}+'&grandChildSelectedName='+ ${escapedGrandChildSelectedName}+'&brand='+ ${brand}+'&page='+ ${page-1}}">&larr; prev</a></li>
+          <li class="next"><a href="#" th:if="${page}<${totalNumOfPage}" th:href="@{'/showItemList?offset=' + ${offset+30}+'&searchName='+${searchName}+'&parentSelectedName='+${escapedParentSelectedName}+'&childSelectedName='+${escapedChildSelectedName}+'&grandChildSelectedName='+ ${escapedGrandChildSelectedName}+'&brand='+ ${brand}+'&page='+ ${page+1}}">next &rarr;</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <!-- table -->
+    <div class="table-responsive">
+      <table id="item-table" class="table table-hover table-condensed">
+        <thead>
+          <tr>
+            <th>name</th>
+            <th>price</th>
+            <th>category</th>
+            <th>brand</th>
+            <th>condition</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="item:${itemList}">
+            <td class="item-name" >
+            <a th:href="@{'/showItemDetail?id=' + ${item.id}+'&searchName='+${searchName}+'&offset=' + ${offset}+'&parentCategory='+${selectedParentCategoryBysearch}+'&childCategory='+${selectedChildCategoryBysearch}+'&grandChildCategory='+${selectedGrandChildCategoryBysearch}+'&brand='+ ${brand}+'&page='+ ${page}}" href="./detail.html" th:text="${item.name}"></a>
+            </td>
+            <td class="item-price" th:if="${item.salePrice !=0}" th:text="${item.salePrice}+'$'+' (sale中!)'"></td>
+            <td class="item-price" th:if="${item.salePrice ==0}" th:text="${item.price}+'$'">52.0</td>
+            <td class="item-category" th:text="${item.nameAll}"><a href="">Electronics</a> / <a href="">Computers &amp; Tablets</a> / <a href="">Components &amp; Parts</a></td>
+            <td class="item-brand" th:text="${item.brandName}"><a href="">Razer</a></td>
+            <td class="item-condition" th:text="${item.condition}">3</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- pagination -->
+    <div class="pages">
+      <nav class="page-nav">
+        <ul class="pager">
+          <li class="previous"><a href="#" th:href="@{'/showItemList?offset=' + ${offset-30}+'&searchName='+${searchName}+'&parentSelectedName='+${escapedParentSelectedName}+'&childSelectedName='+${escapedChildSelectedName}+'&grandChildSelectedName='+ ${escapedGrandChildSelectedName}+'&brand='+ ${brand}+'&page='+ ${page-1}}">&larr; prev</a></li>
+          <li class="next"><a href="#" th:if="${page}<${totalNumOfPage}" th:href="@{'/showItemList?offset=' + ${offset+30}+'&searchName='+${searchName}+'&parentSelectedName='+${escapedParentSelectedName}+'&childSelectedName='+${escapedChildSelectedName}+'&grandChildSelectedName='+ ${escapedGrandChildSelectedName}+'&brand='+ ${brand}+'&page='+ ${page+1}}">next &rarr;</a></li>
+        </ul>
+      </nav>
+      <!-- ページ番号を指定して表示するフォーム -->
+      <div id="select-page">
+        <form class="form-inline" method="post" th:action="@{/showItemList}">
+          <div class="form-group">
+            <div class="input-group col-xs-6">
+              <label></label>
+              <input type="text" class="form-control" name="page"/>
+              <!-- 総ページ数 -->
+              <div class="input-group-addon" th:text="${page}+'/'+${totalNumOfPage}">/ 20</div>
+            </div>
+            <div class="input-group col-xs-1">
+              <button type="submit" class="btn btn-default">Go</button>
+            </div>
+          </div>
+        <input type="hidden" name="searchName" th:value="${searchName}">
+        <input type="hidden" name="parentSelectedName" th:value="${selectedParentCategoryBysearch}">
+        <input type="hidden" name="childSelectedName" th:value="${selectedChildCategoryBysearch}">
+        <input type="hidden" name="grandChildSelectedName" th:value="${selectedGrandChildCategoryBysearch}">
+        <input type="hidden" name="brand" th:value="${brand}">
+        </form>
+      </div>
+    </div>
+  </div>
+  <script th:src="@{/category.js}"></script>
+  <span th:text="${offset}" id="offset" style="display: none"></span>
+</body>
+</html>

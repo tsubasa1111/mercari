@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+</head>
+<body>
+<div class="container" th:fragment="frag_header">
+ <nav class="navbar navbar-inverse">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" th:href="@{/showItemList}" href="./list.html">Rakus Items</a>
+    </div>
+    <div>
+    <a class="navbar-brand" th:href="@{/showSalesGraph?year=2019}">売上一覧</a>
+    </div>
+    <select class="navbar-brand" name="category" onChange="location.href=value;" style="background:black;">
+    <option>カテゴリ</option>
+    <option value="http://localhost:8080/toAddCategory" class="navbar-brand">
+    カテゴリ追加
+    </option>
+　　<option value="http://localhost:8080/toEditCategory" class="navbar-brand">
+    カテゴリ編集 
+    </option>
+    <option value="http://localhost:8080/toDeleteCategory" class="navbar-brand">
+    カテゴリ削除
+    </option>
+    </select>
+    <select class="navbar-brand" name="category" onChange="location.href=value;" style="background:black;">
+    <option>ユーザー</option>
+    <option value="http://localhost:8080/toRegister" class="navbar-brand">
+    ユーザー登録
+    </option>
+　　<option value="http://localhost:8080/toSearchEditUser" class="navbar-brand">
+    ユーザー編集 
+    </option>
+    <option value="http://localhost:8080/toDeleteUser" class="navbar-brand">
+    ユーザー削除
+    </option>
+    </select>
+    <div id="navbar" class="collapse navbar-collapse">
+      <div>
+        <ul class="nav navbar-nav navbar-right">
+          <li><a id="logout" th:href="@{/toLogin}" href="./login.html">Logout <i class="fa fa-power-off"></i></a></li>
+        </ul>
+        <p class="navbar-text navbar-right">
+          <span id="loginName" th:text="${session.userName}">user: userName</span>
+        </p>
+      </div>
+    </div>
+  </nav>
+</div>
+</body>
+</html>

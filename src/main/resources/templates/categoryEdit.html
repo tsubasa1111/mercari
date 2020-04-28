@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <!-- css -->
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" 
+    integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous"/>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+    integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"/>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+    integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous"/>
+  <link rel="stylesheet" href="./mercari.css"/>
+  <!-- script -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+    integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <title>Rakus Items</title>
+</head>
+<body>
+  <!-- navbar -->
+<nav th:include="header::frag_header"></nav>
+
+  <!-- details -->
+  <div id="input-main" class="container">
+    <a type="button" class="btn btn-default" th:href="@{/showItemList}" href="./list.html"><i class="fa fa-reply"></i> back</a>
+    <h2>EditCategory</h2>
+    <!-- -Category1- form -->
+    <form action="#" method="POST" th:action="@{/editCategory}" th:object="${categoryForm}" class="form-horizontal">
+      <div class="form-group">
+        <label for="inputCategory" class="col-sm-2 control-label">-Category1-</label>
+        <div class="col-sm-8">
+          <select name="parentCategory" id="parentCategory">
+            <option  th:if="${parentSelectedName!=null && parentSelectedName!='-Category1-'}" th:text="${parentSelectedName}"></option>
+          <option th:if="${childSelectedName=='-Category2-' || childSelectedName==null}">-Category1-</option>
+            <option th:if="${childSelectedName=='-Category2-' || childSelectedName==null}" th:each="parentCategory:${parentCategoryList}" th:text="${parentCategory.name}"></option>
+		 </select>
+        </div>
+      </div>
+      <div id="changedParentCategory">
+      <label style="margin-left:30px;">変更後のカテゴリ名
+      <input type="text" th:value="${newParentCategory}" name="newParentCategory" id="newParentCategory"  placeholder="任意">
+      </label><br>
+       </div>
+      <!-- -Category2 -->
+      <div class="form-group">
+        <label for="inputCategory" class="col-sm-2 control-label">-Category2-</label>
+        <div class="col-sm-8">
+		<select name="childCategory" id="childCategory">
+            <option th:if="${childSelectedName!=null && childSelectedName!='-Category2-'}"  th:text="${childSelectedName}"></option>
+		<option th:if="${grandChildSelectedName=='- Category3 -' || grandChildSelectedName==null}">-Category2-</option>
+            <option  th:if="${grandChildSelectedName=='- Category3 -' || grandChildSelectedName==null}"  th:each="childCategory:${childCategoryList}" th:text="${childCategory.name}">childCategory1</option>
+ 		</select>
+        </div>
+      </div>
+      <div id="changedChildCategory">
+      <label style="margin-left:30px;">変更後のカテゴリ名
+      <input type="text" name="newChildCategory" th:value="${newChildCategory}" id="newChildCategory" placeholder="任意">
+      </label><br>
+      </div>
+      <!-- -Category3 -->
+      <div class="form-group">
+        <label for="inputCategory" class="col-sm-2 control-label">- Category3 -</label>
+        <div class="col-sm-8">
+		<select name="grandChildCategory" id="grandChildCategory">
+		<option th:if="${grandChildSelectedName!=null && grandChildSelectedName!='- Category3 -'}"  th:text="${grandChildSelectedName}"></option>
+		<option>- Category3 -</option>
+            <option th:each="grandChildCategory:${grandChildCategoryList}" th:text="${grandChildCategory.name}">grandChild1</option>
+         </select>
+        </div>
+      </div>
+      <div id="changedGrandChildCategory">
+      <label style="margin-left:30px;">変更後のカテゴリ名
+      <input type="text" name="newGrandChildCategory" th:value="${newGrandChildCategory}" id="newGrandChildCategory" placeholder="任意">
+      </label><br>
+      </div>
+      <div class="form-group">
+        <label for="category" class="col-sm-2 control-label"></label>
+        <div class="col-sm-8">
+          <span class="text-danger" th:text="${session.categoryError}" style="color:red;">error:may not be empty</span>
+        </div>
+      </div>
+      <!-- submit button -->
+      <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+          <button type="submit" class="btn btn-default">Submit</button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <script th:src="@{/categoryEdit.js}"></script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <!-- css -->
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" 
+    integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous"/>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+    integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"/>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+    integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous"/>
+  <link rel="stylesheet" href="./mercari.css"/>
+  <!-- script -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+    integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <title>Rakus Items</title>
+</head>
+<body>
+  <!-- navbar -->
+  <nav th:include="header::frag_header"></nav>
+
+  <!-- details -->
+  <div id="input-main" class="container">
+    <a type="button" class="btn btn-default" th:href="@{/showItemList}" href="./list.html"><i class="fa fa-reply"></i> back</a>
+    <h2>DeleteCategory</h2>
+    <!-- -Category1- form -->
+    <form action="#" method="POST" th:action="@{/deleteParentCategory}" th:object="${categoryForm}" class="form-horizontal">
+      <div class="form-group">
+      	<div th:text="${includeItem}" style="color:red;"></div>
+      	<div th:text="${categoryError}" style="color:red;"></div>
+        <label for="inputCategory" class="col-sm-2 control-label">-Category1-</label>
+        <div class="col-sm-8">
+          <select name="parentCategory" id="parentCategory">
+            <option  th:if="${parentSelectedName!=null && parentSelectedName!='-Category1-'}" th:text="${parentSelectedName}"></option>
+          <option th:if="${childSelectedName=='-Category2-' || childSelectedName==null}">-Category1-</option>
+            <option th:if="${childSelectedName=='-Category2-' || childSelectedName==null}" th:each="parentCategory:${parentCategoryList}" th:text="${parentCategory.name}"></option>
+		 </select>
+		 <button type="submit">-Category1-所属のカテゴリを削除する</button>
+        </div>
+      </div>
+      </form>
+      <!-- -Category2 -->
+         <form action="#" method="POST" th:action="@{/deleteChildCategory}" th:object="${categoryForm}" class="form-horizontal">
+      <div class="form-group">
+         <div th:text="${childCategoryincludeItem}" style="color:red;"></div>
+      	<div th:text="${childcategoryError}" style="color:red;"></div>
+        <label for="inputCategory" class="col-sm-2 control-label">-Category2-</label>
+        <div class="col-sm-8">
+		<select name="childCategory" id="childCategory">
+            <option th:if="${childSelectedName!=null && childSelectedName!='-Category2-'}"  th:text="${childSelectedName}"></option>
+		<option th:if="${grandChildSelectedName=='- Category3 -' || grandChildSelectedName==null}">-Category2-</option>
+            <option  th:if="${grandChildSelectedName=='- Category3 -' || grandChildSelectedName==null}"  th:each="childCategory:${childCategoryList}" th:text="${childCategory.name}">childCategory1</option>
+ 		</select>
+ 		<input type="hidden" name="inputParentCategory" id="inputParentCategory" th:value="${parentSelectedName}">
+ 		 <button type="submit">-Category2-所属のカテゴリを削除する</button>
+        </div>
+      </div>
+      </form>
+      <!-- -Category3 -->
+         <form action="#" method="POST" th:action="@{/deleteGrandChildCategory}" th:object="${categoryForm}" class="form-horizontal">
+      <div class="form-group">
+        <div th:text="${grandChildCategoryincludeItem}" style="color:red;"></div>
+      	<div th:text="${grandChildcategoryError}" style="color:red;"></div>
+        <label for="inputCategory" class="col-sm-2 control-label">- Category3 -</label>
+        <div class="col-sm-8">
+		<select name="grandChildCategory" id="grandChildCategory">
+		<option th:if="${grandChildSelectedName!=null && grandChildSelectedName!='- Category3 -'}"  th:text="${grandChildSelectedName}"></option>
+		<option>- Category3 -</option>
+            <option th:each="grandChildCategory:${grandChildCategoryList}" th:text="${grandChildCategory.name}">grandChild1</option>
+         </select>
+         <input type="hidden" name="inputParentCategory" id="inputParentCategory" th:value="${parentSelectedName}">
+         <input type="hidden" name="inputChildCategory" id="inputChildCategory" th:value="${childSelectedName}">
+          <button type="submit">- Category3 -を削除する</button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <script th:src="@{/categoryDelete.js}"></script>
+</body>
+</html>
